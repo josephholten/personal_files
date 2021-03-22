@@ -1,4 +1,4 @@
-# personal_files
+# personal files
 A collection of essential files for Joseph Holten
 
 _gvimrc: windows gvim config
