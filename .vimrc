@@ -2,7 +2,7 @@ set nocompatible              " be iMproved, required
 filetype off                  " required
 
 set encoding=UTF-8
-set guifont=DroidSansMono\ 10
+set guifont=RobotoMono\ Nerd\ Font\ Mono\ 11
 set conceallevel=3
 
 " set the runtime path to include Vundle and initialize
@@ -10,17 +10,22 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 " let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+    Plugin 'VundleVim/Vundle.vim'
     Plugin 'preservim/nerdtree'
-    Plugin 'morhetz/gruvbox'
+    " Plugin 'morhetz/gruvbox'
+    Plugin 'agude/vim-eldar'
     Plugin 'vim-airline/vim-airline'
     Plugin 'vim-airline/vim-airline-themes'
     Plugin 'ryanoasis/vim-devicons'
     Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
-    " Plugin 'vim-scripts/indentpython.vim'
-    " Plugin 'Valloric/YouCompleteMe'
+    Plugin 'tmhedberg/SimpylFold'
+    Plugin 'vim-scripts/indentpython.vim'
+    Plugin 'Valloric/YouCompleteMe'
+    Plugin 'vim-syntastic/syntastic'
+    Plugin 'nvie/vim-flake8'
     " Plugin 'itchyny/vim-haskell-indent'
     " Plugin 'neoclide/coc.nvim'
+    Plugin 'fladson/vim-kitty'
 
 
 
@@ -48,15 +53,20 @@ if exists("g:loaded_webdevicons")
     call webdevicons#refresh()
 endif
 
+if has('syntax')
+    syntax enable
+    silent! colorscheme eldar
+endif
+
 " gruvbox settings
-let g:gruvbox_contrast_dark = 'hard'
-set background=dark " darkmode
-autocmd vimenter * ++nested colorscheme gruvbox
+" let g:gruvbox_contrast_dark = 'hard'
+"set background=dark " darkmode
+"autocmd vimenter * ++nested colorscheme gruvbox
 
 " nerdtree
 
 let NERDTreeShowHidden=1
-autocmd VimEnter * NERDTree
+" autocmd VimEnter * NERDTree
 " " Start NERDTree, unless a file or session is specified, eg. vim -S session_file.vim.
 " autocmd StdinReadPre * let s:std_in=1
 " autocmd VimEnter * if argc() == 0 && !exists('s:std_in') && v:this_session == '' | NERDTree | endif
@@ -118,6 +128,8 @@ set cpoptions+=n
 
 " Highlight the line I'm on
 set cursorline
+hi clear CursorLine
+hi CursorLine cterm=underline
 
 " Highlight matching paired delimiter
 set showmatch
@@ -133,3 +145,49 @@ set autoindent
 " size of an "indent"
 set shiftwidth=4
 
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+" Enable folding with the spacebar
+nnoremap <C-space> za
+
+"split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+"" python indentation
+"au BufNewFile,BufRead *.py
+"    \ set tabstop=4
+"    \ set softtabstop=4
+"    \ set shiftwidth=4
+"    \ set textwidth=79
+"    \ set expandtab
+"    \ set autoindent
+"    \ set fileformat=unix
+"" python unneccessary whitespace
+"" au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+"
+"" javascript, html, css indent
+"au BufNewFile,BufRead *.js, *.html, *.css
+"    \ set tabstop=2
+"    \ set softtabstop=2
+"    \ set shiftwidth=2
+
+" ycm options
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+"python with virtualenv support
+py3 << EOF
+import os
+import sys
+if 'VIRTUAL_ENV' in os.environ:
+  project_base_dir = os.environ['VIRTUAL_ENV']
+  activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+  execfile(activate_this, dict(__file__=activate_this))
+EOF
+
+" custom commands
+:command! -complete=file -nargs=1 Rpdf :r !pdftotext -nopgbrk <q-args> - |fmt -csw78
